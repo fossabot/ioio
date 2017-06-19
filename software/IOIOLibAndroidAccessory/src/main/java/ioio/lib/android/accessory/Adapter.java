@@ -89,8 +89,8 @@ class Adapter {
 		switch (support_) {
 		case NEW:
 			return getManagerNew(wrapper);
-		case LEGACY:
-			return getManagerLegacy(wrapper);
+//		case LEGACY:
+//			return getManagerLegacy(wrapper);
 		default:
 			return null;
 		}
@@ -117,55 +117,55 @@ class Adapter {
 		return new NewUsbManager(manager);
 	}
 
-	private AbstractUsbManager getManagerLegacy(ContextWrapper wrapper) {
-		final com.android.future.usb.UsbManager manager = com.android.future.usb.UsbManager
-				.getInstance(wrapper);
-		return new LegacyUsbManager(manager);
-	}
-
-	private static final class LegacyUsbManager extends AbstractUsbManager {
-		private final com.android.future.usb.UsbManager manager_;
-
-		private LegacyUsbManager(com.android.future.usb.UsbManager manager) {
-			super(com.android.future.usb.UsbManager.ACTION_USB_ACCESSORY_DETACHED,
-					com.android.future.usb.UsbManager.EXTRA_PERMISSION_GRANTED);
-			manager_ = manager;
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		void requestPermission(UsbAccessoryInterface accessory, PendingIntent pendingIntent) {
-			manager_.requestPermission(
-					((UsbAccessoryAdapter<com.android.future.usb.UsbAccessory>) accessory).impl,
-					pendingIntent);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		ParcelFileDescriptor openAccessory(UsbAccessoryInterface accessory) {
-			return manager_
-					.openAccessory(((UsbAccessoryAdapter<com.android.future.usb.UsbAccessory>) accessory).impl);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		boolean hasPermission(UsbAccessoryInterface accessory) {
-			return manager_
-					.hasPermission(((UsbAccessoryAdapter<com.android.future.usb.UsbAccessory>) accessory).impl);
-		}
-
-		@Override
-		UsbAccessoryInterface[] getAccessoryList() {
-			final com.android.future.usb.UsbAccessory[] accs = manager_.getAccessoryList();
-			if (accs == null)
-				return null;
-			UsbAccessoryInterface[] result = new UsbAccessoryInterface[accs.length];
-			for (int i = 0; i < accs.length; ++i) {
-				result[i] = new UsbAccessoryAdapter<com.android.future.usb.UsbAccessory>(accs[i]);
-			}
-			return result;
-		}
-	}
+//	private AbstractUsbManager getManagerLegacy(ContextWrapper wrapper) {
+//		final com.android.future.usb.UsbManager manager = com.android.future.usb.UsbManager
+//				.getInstance(wrapper);
+//		return new LegacyUsbManager(manager);
+//	}
+//
+//	private static final class LegacyUsbManager extends AbstractUsbManager {
+//		private final com.android.future.usb.UsbManager manager_;
+//
+//		private LegacyUsbManager(com.android.future.usb.UsbManager manager) {
+//			super(com.android.future.usb.UsbManager.ACTION_USB_ACCESSORY_DETACHED,
+//					com.android.future.usb.UsbManager.EXTRA_PERMISSION_GRANTED);
+//			manager_ = manager;
+//		}
+//
+//		@SuppressWarnings("unchecked")
+//		@Override
+//		void requestPermission(UsbAccessoryInterface accessory, PendingIntent pendingIntent) {
+//			manager_.requestPermission(
+//					((UsbAccessoryAdapter<com.android.future.usb.UsbAccessory>) accessory).impl,
+//					pendingIntent);
+//		}
+//
+//		@SuppressWarnings("unchecked")
+//		@Override
+//		ParcelFileDescriptor openAccessory(UsbAccessoryInterface accessory) {
+//			return manager_
+//					.openAccessory(((UsbAccessoryAdapter<com.android.future.usb.UsbAccessory>) accessory).impl);
+//		}
+//
+//		@SuppressWarnings("unchecked")
+//		@Override
+//		boolean hasPermission(UsbAccessoryInterface accessory) {
+//			return manager_
+//					.hasPermission(((UsbAccessoryAdapter<com.android.future.usb.UsbAccessory>) accessory).impl);
+//		}
+//
+//		@Override
+//		UsbAccessoryInterface[] getAccessoryList() {
+//			final com.android.future.usb.UsbAccessory[] accs = manager_.getAccessoryList();
+//			if (accs == null)
+//				return null;
+//			UsbAccessoryInterface[] result = new UsbAccessoryInterface[accs.length];
+//			for (int i = 0; i < accs.length; ++i) {
+//				result[i] = new UsbAccessoryAdapter<com.android.future.usb.UsbAccessory>(accs[i]);
+//			}
+//			return result;
+//		}
+//	}
 
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
 	private static final class NewUsbManager extends AbstractUsbManager {
