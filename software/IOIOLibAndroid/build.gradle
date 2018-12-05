@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 
 buildscript {
     repositories {
-        mavenCentral()
+        jcenter()
         google()
     }
 
@@ -11,16 +11,9 @@ buildscript {
     }
 }
 
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            pom.project {
-                name = 'IOIOLibAndroid'
-                description = 'IOIO library for Android - common code with ADB support'
-                packaging = 'aar'
-            }
-        }
-    }
+repositories {
+    jcenter()
+    google()
 }
 
 android {
@@ -29,5 +22,5 @@ android {
 }
 
 dependencies {
-    implementation project(":IOIOLibCore")
+    api project(":IOIOLibCore")
 }
