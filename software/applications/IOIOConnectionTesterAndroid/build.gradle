@@ -1,24 +1,29 @@
 apply plugin: 'com.android.application'
 
 buildscript {
-  repositories {
-    mavenCentral()
-  }
+    repositories {
+        mavenCentral()
+        google()
+    }
 
-  dependencies {
-    classpath 'com.android.tools.build:gradle:2.3.1'
-  }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.2.1'
+    }
 }
 
 android {
-  buildToolsVersion "25.0.2"
-  compileSdkVersion 19
+    compileSdkVersion 26
+    buildToolsVersion '28.0.3'
+    defaultConfig {
+        minSdkVersion 26
+        targetSdkVersion 26
+    }
 }
 
 dependencies {
-  compile project(':applications/IOIOConnectionTester')
-  compile 'com.github.ytai.ioio:IOIOLibAndroid:5.07'
-  compile 'com.github.ytai.ioio:IOIOLibAndroidBluetooth:5.07'
-  compile 'com.github.ytai.ioio:IOIOLibAndroidAccessory:5.07'
+    implementation project(':applications/IOIOConnectionTester')
+    implementation 'com.github.ytai.ioio:IOIOLibAndroid:5.07'
+    implementation 'com.github.ytai.ioio:IOIOLibAndroidBluetooth:5.07'
+    implementation 'com.github.ytai.ioio:IOIOLibAndroidAccessory:5.07'
 }
 

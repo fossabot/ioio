@@ -1,32 +1,33 @@
 apply plugin: 'com.android.library'
 
 buildscript {
-  repositories {
-    mavenCentral()
-  }
+    repositories {
+        mavenCentral()
+        google()
+    }
 
-  dependencies {
-    classpath 'com.android.tools.build:gradle:2.3.1'
-  }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.2.1'
+    }
 }
 
 uploadArchives {
-  repositories {
-    mavenDeployer {
-      pom.project {
-        name = 'IOIOLibAndroid'
-        description = 'IOIO library for Android - common code with ADB support'
-        packaging = 'aar'
-      }
+    repositories {
+        mavenDeployer {
+            pom.project {
+                name = 'IOIOLibAndroid'
+                description = 'IOIO library for Android - common code with ADB support'
+                packaging = 'aar'
+            }
+        }
     }
-  }
 }
 
 android {
-  buildToolsVersion '25.0.0'
-  compileSdkVersion 7
+    compileSdkVersion 26
+    buildToolsVersion '28.0.3'
 }
 
 dependencies {
-  compile project(":IOIOLibCore")
+    implementation project(":IOIOLibCore")
 }
