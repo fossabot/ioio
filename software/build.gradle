@@ -1,11 +1,8 @@
 allprojects {
     group = 'com.flytrex.ioio'
-    version = 1.00
+    version = "1.01"
     ext.versionNamespace = 'ioio'
-    ext.versionString = sprintf("%s%02d%02d",
-            versionNamespace,
-            (int) version,
-            ((int) (version * 100)) % 100)
+    ext.versionString = version
 }
 
 subprojects {
