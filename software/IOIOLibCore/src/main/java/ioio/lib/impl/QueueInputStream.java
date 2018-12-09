@@ -28,98 +28,121 @@
  */
 package ioio.lib.impl;
 
-import ioio.lib.spi.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+
+import ioio.lib.spi.Log;
 
 class QueueInputStream extends InputStream {
 	private enum State {
 		OPEN, CLOSED, KILLED
-	};
+	}
 
-	private final Queue<Byte> queue_ = new ArrayBlockingQueue<Byte>(
-			Constants.BUFFER_SIZE);
+
+	private final PipedOutputStream pipeOut;
+	private final PipedInputStream pipeIn;
+
+	private boolean loggedClosedStream = false;
+
+
+	QueueInputStream(){
+		try{
+			this.pipeOut = new PipedOutputStream();
+			this.pipeIn = new PipedInputStream(pipeOut, 1 << 16);
+		} catch (IOException e){
+			throw new IllegalStateException("Piped stream constructors should not throw IOException", e);
+		}
+	}
+
+
+
 	private State state_ = State.OPEN;
 
 	@Override
-	synchronized public int read() throws IOException {
-		try {
-			while (state_ == State.OPEN && queue_.isEmpty()) {
-				wait();
-			}
-			if (state_ == State.KILLED) {
-				throw new IOException("Stream has been closed");
-			}
-			if (state_ == State.CLOSED && queue_.isEmpty()) {
-				return -1;
-			}
-			return ((int) queue_.remove()) & 0xFF;
-		} catch (InterruptedException e) {
-			throw new IOException("Interrupted");
+	public int read() throws IOException {
+		State state = getState();
+
+		if (state == State.KILLED) {
+			throw new IOException("Stream has been closed");
 		}
+
+		if (state == State.CLOSED && (pipeIn.available() == 0)) {
+			return -1;
+		}
+
+		return pipeIn.read();
 	}
 
+
+
 	@Override
-	synchronized public int read(byte[] b, int off, int len) throws IOException {
+	public int read(byte[] b, int off, int len) throws IOException {
 		if (len == 0) {
 			return 0;
 		}
-		try {
-			while (state_ == State.OPEN && queue_.isEmpty()) {
-				wait();
-			}
-			if (state_ == State.KILLED) {
-				throw new IOException("Stream has been closed");
-			}
-			if (state_ == State.CLOSED && queue_.isEmpty()) {
-				return -1;
-			}
-			if (len > queue_.size()) {
-				len = queue_.size();
-			}
-			for (int i = 0; i < len; ++i) {
-				b[off++] = queue_.remove();
-			}
-			return len;
-		} catch (InterruptedException e) {
-			throw new IOException("Interrupted");
+
+		State state = getState();
+
+		if (state == State.KILLED) {
+			throw new IOException("Stream has been closed");
 		}
+
+		if (state == State.CLOSED && (pipeIn.available() == 0)) {
+			return -1;
+		}
+
+		return pipeIn.read(b, off, len);
 	}
 
-	synchronized public void write(byte[] data, int size) {
-		for (int i = 0; i < size; ++i) {
-			if (queue_.size() == Constants.BUFFER_SIZE) {
-				Log.e("QueueInputStream", "Buffer overflow, discarding data");
-				break;
-			}
-			queue_.add(data[i]);
+
+	public void write(byte[] data, int size) {
+		State state = getState();
+
+		if ((state == State.KILLED) || (state == State.CLOSED)){
+			if (!loggedClosedStream)
+				Log.e("QueueInputStream", "Stream has been " + (state == State.KILLED ? "killed" : "closed"));
+			loggedClosedStream = true;
+			return;
 		}
-		notifyAll();
+
+		try{
+			pipeOut.write(data, 0, size);
+		} catch (IOException e){
+			Log.e("QueueInputStream", "PipedOutputStream.write should not throw an IOException");
+		}
 	}
 
 	@Override
-	synchronized public int available() throws IOException {
-		return queue_.size();
+	public int available() throws IOException {
+		return pipeIn.available();
 	}
 
 	@Override
-	synchronized public void close() {
-		if (state_ != State.OPEN) {
+	public void close() {
+		if (getState() != State.OPEN) {
 			return;
 		}
-		state_ = State.CLOSED;
-		notifyAll();
+		setState(State.CLOSED);
 	}
 
-	synchronized public void kill() {
-		if (state_ != State.OPEN) {
+	void kill() {
+		if (getState() != State.OPEN) {
 			return;
 		}
-		state_ = State.KILLED;
-		notifyAll();
+		setState(State.KILLED);
+	}
+
+
+	private synchronized void setState(State state){
+		this.state_ = state;
+	}
+
+
+	private synchronized State getState(){
+		return state_;
 	}
 
 }
