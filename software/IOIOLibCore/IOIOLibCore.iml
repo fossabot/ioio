@@ -27,6 +27,5 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="IOIOLibCore.IOIOLibCore-1.01" level="project" />
   </component>
 </module>

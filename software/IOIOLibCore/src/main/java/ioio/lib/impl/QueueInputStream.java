@@ -126,6 +126,12 @@ class QueueInputStream extends InputStream {
 			return;
 		}
 		setState(State.CLOSED);
+		try{
+			pipeIn.close();
+			pipeOut.close();
+		} catch (IOException e){
+			Log.e("QueueInputStream", "Piped(Input|Output)Stream.close should not throw an IOException");
+		}
 	}
 
 	void kill() {
@@ -133,6 +139,12 @@ class QueueInputStream extends InputStream {
 			return;
 		}
 		setState(State.KILLED);
+		try{
+			pipeIn.close();
+			pipeOut.close();
+		} catch (IOException e){
+			Log.e("QueueInputStream", "Piped(Input|Output)Stream.close should not throw an IOException");
+		}
 	}
 
 
