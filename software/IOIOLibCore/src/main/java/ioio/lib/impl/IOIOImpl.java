@@ -91,7 +91,7 @@ public class IOIOImpl implements IOIO, DisconnectListener {
 
 	IOIOProtocol protocol_;
 	ResourceManager resourceManager_;
-	IncomingState incomingState_ = new IncomingState();
+	final IncomingState incomingState_ = new IncomingState();
 	Board.Hardware hardware_;
 	private IOIOConnection connection_;
 	private State state_ = State.INIT;
@@ -110,10 +110,9 @@ public class IOIOImpl implements IOIO, DisconnectListener {
 			throw new ConnectionLostException();
 		}
 		addDisconnectListener(this);
-		Log.d(TAG, "Waiting for IOIO connection");
+		Log.d(TAG, "Waiting for IOIO connection (" + connection_.getClass().getCanonicalName() + ")");
 		try {
 			try {
-				Log.v(TAG, "Waiting for underlying connection");
 				connection_.waitForConnect();
 				synchronized (this) {
 					if (disconnect_) {
@@ -211,11 +210,11 @@ public class IOIOImpl implements IOIO, DisconnectListener {
 		}
 	}
 
-	synchronized void removeDisconnectListener(DisconnectListener listener) {
+	void removeDisconnectListener(DisconnectListener listener) {
 		incomingState_.removeDisconnectListener(listener);
 	}
 
-	synchronized void addDisconnectListener(DisconnectListener listener)
+	void addDisconnectListener(DisconnectListener listener)
 			throws ConnectionLostException {
 		incomingState_.addDisconnectListener(listener);
 	}

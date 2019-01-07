@@ -1,6 +1,6 @@
 allprojects {
     group = 'com.flytrex.ioio'
-    version = "1.02"
+    version = "1.03"
     ext.versionNamespace = 'ioio'
     ext.versionString = version
 }

@@ -33,6 +33,8 @@ public abstract class IOIOBaseApplicationHelper implements IOIOConnectionThreadP
 		private final IOIOConnectionFactory connectionFactory_;
 
 		IOIOThread(IOIOLooper looper, IOIOConnectionFactory factory) {
+			setName(factory.getType());
+
 			looper_ = looper;
 			connectionFactory_ = factory;
 		}
