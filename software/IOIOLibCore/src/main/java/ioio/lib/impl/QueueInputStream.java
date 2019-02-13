@@ -110,6 +110,7 @@ class QueueInputStream extends InputStream {
 
 		try{
 			pipeOut.write(data, 0, size);
+			pipeOut.flush(); // It's retarded, but PipedOutputStream will not wake up the reader until flushed
 		} catch (IOException e){
 			Log.e("QueueInputStream", "PipedOutputStream.write should not throw an IOException");
 		}
