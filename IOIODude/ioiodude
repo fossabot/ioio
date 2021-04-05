@@ -1,0 +1,5 @@
+#!/bin/bash
+
+DIR=$(dirname $0)
+java -Done-jar.silent=true -jar $DIR/ioiodude.jar $*
+
